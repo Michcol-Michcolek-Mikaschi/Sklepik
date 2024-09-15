@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+const { ObjectId } = mongoose.Schema;
 
 const categorySchema = new mongoose.Schema({
   name: {
@@ -7,6 +8,11 @@ const categorySchema = new mongoose.Schema({
     required: true,
     maxLength: 32,
     unique: true,
+  },
+  parentCategory: {
+    type: ObjectId,
+    ref: "Category",
+    default: null, // Dla głównych kategorii będzie null, dla podkategorii referencja do kategorii nadrzędnej
   },
 });
 
