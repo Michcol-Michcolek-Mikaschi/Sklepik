@@ -6,22 +6,28 @@ const createCategory = asyncHandler(async (req, res) => {
     const { name, parentCategory } = req.body;
 
     if (!name) {
-      return res.json({ error: "Nazwa jest wymagana" });
+      return res.status(400).json({ error: "Nazwa jest wymagana" });
     }
 
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {
-      return res.json({ error: "Kategoria już istnieje" });
+      return res.status(400).json({ error: "Kategoria już istnieje" });
     }
 
-    const category = new Category({ name, parentCategory });
+    const categoryData = { name };
+    if (parentCategory && parentCategory !== "") {
+      categoryData.parentCategory = parentCategory;
+    }
+
+    const category = new Category(categoryData);
     await category.save();
-    res.json(category);
+    res.status(201).json(category);
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error);
+    console.error(error);
+    return res.status(400).json({ error: "Błąd podczas tworzenia kategorii" });
   }
 });
+
 
 
 const updateCategory = asyncHandler(async (req, res) => {
@@ -66,15 +72,11 @@ const removeCategory = asyncHandler(async (req, res) => {
   }
 });
 
+
+// NIE używaj populate na parentCategory
 const listCategory = asyncHandler(async (req, res) => {
-  try {
-    // Znajdowanie wszystkich kategorii i zagnieżdżonych podkategorii
-    const all = await Category.find({}).populate('parentCategory');
-    res.json(all);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json(error.message);
-  }
+  const categories = await Category.find({}).lean(); // Użyj lean() dla lepszej wydajności
+  res.json(categories);
 });
 
 
@@ -91,7 +93,6 @@ const readCategory = asyncHandler(async (req, res) => {
     return res.status(400).json(error.message);
   }
 });
-
 
 export {
   createCategory,

@@ -2,6 +2,7 @@ import { useGetTopProductsQuery } from "../redux/api/productApiSlice";
 import Loader from "./Loader";
 import SmallProduct from "../pages/Products/SmallProduct";
 import ProductCarousel from "../pages/Products/ProductCarousel";
+import TopOffers from "../components/TopOffers";  // import komponentu TopOffers
 
 const Header = () => {
   const { data, isLoading, error } = useGetTopProductsQuery();
@@ -16,6 +17,9 @@ const Header = () => {
 
   return (
     <>
+      {/* Dodanie komponentu TopOffers nad karuzelą */}
+      <TopOffers products={data} />  
+
       <div className="flex justify-around">
         <div className="xl:block lg:hidden md:hidden:sm:hidden">
           <div className="grid grid-cols-2">

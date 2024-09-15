@@ -1,10 +1,20 @@
-import { fetchBaseQuery, createApi } from "@reduxjs/toolkit/query/react";
+// src/redux/api/apiSlice.js
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BASE_URL } from "../constants";
 
-const baseQuery = fetchBaseQuery({ baseUrl: BASE_URL });
-
 export const apiSlice = createApi({
-  baseQuery,
-  tagTypes: ["Product", "Order", "User", "Category"],
-  endpoints: () => ({}),
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL, // Teraz jest pusty
+    prepareHeaders: (headers, { getState }) => {
+      const userInfo = getState().auth.userInfo;
+      if (userInfo && userInfo.token) {
+        headers.set("authorization", `Bearer ${userInfo.token}`);
+      }
+      return headers;
+    },
+  }),
+  tagTypes: ["Category", "Product", "User", "Order"],
+  endpoints: (builder) => ({}),
 });
+
+export default apiSlice;

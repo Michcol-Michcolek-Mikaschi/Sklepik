@@ -1,19 +1,12 @@
-import mongoose from "mongoose";
-const { ObjectId } = mongoose.Schema;
+// categoryModel.js
+
+import mongoose from 'mongoose';
 
 const categorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    trim: true,
-    required: true,
-    maxLength: 32,
-    unique: true,
-  },
-  parentCategory: {
-    type: ObjectId,
-    ref: "Category",
-    default: null, // Dla głównych kategorii będzie null, dla podkategorii referencja do kategorii nadrzędnej
-  },
+  name: { type: String, required: true },
+  parentCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },
 });
 
-export default mongoose.model("Category", categorySchema);
+const Category = mongoose.model('Category', categorySchema);
+
+export default Category;

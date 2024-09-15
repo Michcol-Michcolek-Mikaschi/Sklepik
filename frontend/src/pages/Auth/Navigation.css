@@ -1,36 +1,149 @@
+/* Nawigacja */
 #navigation-container {
   width: 4%;
   transition: width 0.3s ease-in-out;
-  overflow: hidden; /* Hide overflowing content during transition */
+  overflow: hidden;
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: #1a1a1d;
+  z-index: 1000;
 }
+
 
 #navigation-container:hover {
   width: 15%;
 }
 
-/* Initially hide nav-item-name */
+/* Nazwy elementów nawigacyjnych */
 .nav-item-name {
   display: none;
-  transition: opacity 0.2s ease-in-out; /* Add opacity transition */
+  transition: opacity 0.2s ease-in-out;
 }
 
 #navigation-container:hover .nav-item-name {
   display: block;
   opacity: 1;
+  color: #fff; /* Biały tekst dla kontrastu */
 }
 
+/* Pole wyszukiwania */
 .search-input {
   display: none;
   opacity: 0;
-  transition: opacity 0.2s ease-in-out; /* Add opacity transition */
+  transition: opacity 0.2s ease-in-out;
 }
 
 #navigation-container:hover .search-input {
   display: block;
   opacity: 1;
+  background-color: #333; /* Ciemniejsze tło dla pola */
+  color: #fff; /* Biały tekst w polu */
 }
 
 #navigation-container:hover .search-icon {
   display: none;
-  transition: opacity 0.2s ease-in-out; /* Add opacity transition */
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Główna zawartość */
+.main-content {
+  margin-left: 6%; /* Zwiększamy margines, aby uniknąć nachodzenia menu */
+  transition: margin-left 0.3s ease-in-out;
+  padding: 20px;
+}
+
+/* Gdy menu nawigacyjne się rozszerzy */
+#navigation-container:hover + .main-content {
+  margin-left: 18%; /* Zwiększono margines dla szerokości rozszerzonego menu */
+}
+
+/* Formularze i pola wyboru */
+input[type="text"],
+select {
+  background-color: #1e1e24; /* Kontrastowe, ciemne tło */
+  color: #fff; /* Biały tekst dla lepszej czytelności */
+  border: 1px solid #333; /* Stylowe, ciemniejsze obramowanie */
+  padding: 10px;
+  margin-bottom: 10px; /* Odstępy między elementami */
+  width: 100%;
+  border-radius: 8px;
+}
+
+input[type="text"]::placeholder {
+  color: #bbb; /* Lżejszy kolor placeholdera */
+}
+
+/* Profesjonalne przyciski */
+button {
+  background-color: #00aaff; /* Nowoczesny, niebieski przycisk */
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #008ecc;
+}
+
+/* Styl dla checkboxów i radiobuttonów */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 20px; /* Większy rozmiar */
+  height: 20px;
+  accent-color: #00aaff; /* Kolor akcentu */
+  border-radius: 50%; /* Zaokrąglenie dla radiobuttonów */
+}
+
+.filter-section button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px 0;
+  background-color: #00aaff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filter-section button:hover {
+  background-color: #008ecc;
+}
+
+.filter-section h2 {
+  color: #fff; /* Kontrastowy biały nagłówek */
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.filter-section input[type="text"] {
+  margin-bottom: 15px;
+}
+
+.filter-section button {
+  margin-top: 10px;
+  width: 100%; /* Szeroki przycisk resetowania */
+}
+/* Poprawka koloru tekstu w liście kategorii */
+.category-list li {
+  background-color: #e0e0e0; /* Zmieniono na lekko ciemniejsze tło */
+  color: #333; /* Ciemny kolor tekstu */
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+@media (max-width: 768px) {
+  /* Główna zawartość dla mniejszych ekranów */
+  .main-content {
+    margin-left: 12%; /* Zwiększony margines dla mniejszych ekranów */
+  }
+
+  #navigation-container:hover + .main-content {
+    margin-left: 20%; /* Zwiększony margines po rozszerzeniu menu */
+  }
 }
