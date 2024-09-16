@@ -29,21 +29,11 @@ const ProductCarousel = () => {
     autoplaySpeed: 3000,
   };
 
-  // Losowanie 4 ofert do wyświetlenia nad karuzelą
-  const topOffers = products.slice(0, 4);
+
 
   return (
     <div className="mb-4">
-      {/* Renderowanie 4 małych ofert nad karuzelą */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        {topOffers.map(({ image, _id, name, price }) => (
-          <div key={_id} className="bg-gray-800 rounded-lg p-4 shadow-md text-white">
-            <img src={image} alt={name} className="h-24 w-full object-cover rounded-md" />
-            <h2 className="text-lg font-semibold">{name}</h2>
-            <p className="text-sm">ZŁ {price}</p>
-          </div>
-        ))}
-      </div>
+     
 
       {/* Karuzela */}
       {isLoading ? null : error ? (

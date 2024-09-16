@@ -1,84 +1,60 @@
+import React from 'react';
+import { useGetTopProductsQuery } from "../../redux/api/productApiSlice";
 import Message from "../../components/Message";
-import Loader from "../../components/Loader";
-import { Link } from "react-router-dom";
-import { useGetMyOrdersQuery } from "../../redux/api/orderApiSlice";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import moment from "moment";
+import 'moment/locale/pl.js'; 
+import {
+  FaBox,
+  FaClock,
+  FaShoppingCart,
+  FaStar,
+  FaStore,
+} from "react-icons/fa";
+import '../styles/ProductCarousel.css';
 
-const UserOrder = () => {
-  const { data: orders, isLoading, error } = useGetMyOrdersQuery();
+moment.locale('pl');
+
+const ProductCarousel = () => {
+  const { data: products, isLoading, error } = useGetTopProductsQuery();
+  
+  const settings = {
+    dots: false,
+    infinite: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
 
   return (
-    <div className="container mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Moje zamówienia </h2>
-
-      {isLoading ? (
-        <Loader />
-      ) : error ? (
-        <Message variant="danger">{error?.data?.error || error.error}</Message>
-      ) : (
-        <table className="w-full">
-          <thead>
-            <tr>
-              <td className="py-2">OBRAZ</td>
-              <td className="py-2">ID</td>
-              <td className="py-2">DATA</td>
-              <td className="py-2">KWOTA</td>
-              <td className="py-2">PŁATNOŚĆ</td>
-              <td className="py-2">DOSTARCZONY</td>
-              <td className="py-2"></td>
-            </tr>
-          </thead>
-
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order._id}>
-                <img
-                  src={order.orderItems[0].image}
-                  alt={order.user}
-                  className="w-[6rem] mb-5"
-                />
-
-                <td className="py-2">{order._id}</td>
-                <td className="py-2">{order.createdAt.substring(0, 10)}</td>
-                <td className="py-2">ZŁ {order.totalPrice}</td>
-
-                <td className="py-2">
-                  {order.isPaid ? (
-                    <p className="p-1 text-center bg-green-400 w-[6rem] rounded-full">
-                      Zakończony
-                    </p>
-                  ) : (
-                    <p className="p-1 text-center bg-red-400 w-[6rem] rounded-full">
-                      Oczekujące
-                    </p>
-                  )}
-                </td>
-
-                <td className="px-2 py-2">
-                  {order.isDelivered ? (
-                    <p className="p-1 text-center bg-green-400 w-[6rem] rounded-full">
-                      Zakończony
-                    </p>
-                  ) : (
-                    <p className="p-1 text-center bg-red-400 w-[6rem] rounded-full">
-                      Oczekujące
-                    </p>
-                  )}
-                </td>
-
-                <td className="px-2 py-2">
-                  <Link to={`/order/${order._id}`}>
-                    <button className="bg-pink-400 text-back py-2 px-3 rounded">
-                    Pokaż szczegóły
-                    </button>
-                  </Link>
-                </td>
-              </tr>
+    <div className="product-carousel-container">
+      <div className="offers">
+        {products && products.slice(0, 4).map((product, index) => (
+          <div key={index} className="offer">
+            <h3>{product.name}</h3>
+            <p>{product.description}</p>
+          </div>
+        ))}
+      </div>
+      <div className="carousel">
+        {isLoading ? (
+          <Message>Loading...</Message>
+        ) : error ? (
+          <Message variant="danger">{error}</Message>
+        ) : (
+          <Slider {...settings}>
+            {products.map((product) => (
+              <div key={product._id}>
+                <img src={product.image} alt={product.name} />
+                <h3>{product.name}</h3>
+              </div>
             ))}
-          </tbody>
-        </table>
-      )}
+          </Slider>
+        )}
+      </div>
     </div>
   );
 };
 
-export default UserOrder;
+export default ProductCarousel;
