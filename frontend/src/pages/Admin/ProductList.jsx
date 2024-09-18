@@ -7,13 +7,14 @@ import {
 import { useFetchCategoriesQuery } from "../../redux/api/categoryApiSlice";
 import { toast } from "react-toastify";
 import AdminMenu from "./AdminMenu";
+import CategorySelect from "../../components/CategorySelect";
 
 const ProductList = () => {
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState([]);
   const [quantity, setQuantity] = useState("");
   const [brand, setBrand] = useState("");
   const [stock, setStock] = useState(0);
@@ -33,7 +34,7 @@ const ProductList = () => {
       productData.append("name", name);
       productData.append("description", description);
       productData.append("price", price);
-      productData.append("category", category);
+      productData.append("category", category[category.length - 1]); // Wybieramy najniższą podkategorię
       productData.append("quantity", quantity);
       productData.append("brand", brand);
       productData.append("countInStock", stock);
@@ -109,7 +110,7 @@ const ProductList = () => {
                 />
               </div>
               <div className="two ml-10 ">
-                <label htmlFor="name block">Cena</label> <br />
+                <label htmlFor="price">Cena</label> <br />
                 <input
                   type="number"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
@@ -120,7 +121,7 @@ const ProductList = () => {
             </div>
             <div className="flex flex-wrap">
               <div className="one">
-                <label htmlFor="name block">ILOŚĆ</label> <br />
+                <label htmlFor="quantity">Ilość</label> <br />
                 <input
                   type="number"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
@@ -129,7 +130,7 @@ const ProductList = () => {
                 />
               </div>
               <div className="two ml-10 ">
-                <label htmlFor="name block">MARKA</label> <br />
+                <label htmlFor="brand">Marka</label> <br />
                 <input
                   type="text"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
@@ -139,8 +140,8 @@ const ProductList = () => {
               </div>
             </div>
 
-            <label htmlFor="" className="my-5">
-              OPIS-PRODUKTU
+            <label htmlFor="description" className="my-5">
+              Opis produktu
             </label>
             <textarea
               type="text"
@@ -151,9 +152,9 @@ const ProductList = () => {
 
             <div className="flex justify-between">
               <div>
-                <label htmlFor="name block">LICZBA W MAGAZYNIE</label> <br />
+                <label htmlFor="stock">Liczba w magazynie</label> <br />
                 <input
-                  type="text"
+                  type="number"
                   className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
                   value={stock}
                   onChange={(e) => setStock(e.target.value)}
@@ -161,18 +162,7 @@ const ProductList = () => {
               </div>
 
               <div>
-                <label htmlFor="">KATEGORIA</label> <br />
-                <select
-                  placeholder="Choose Category"
-                  className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white"
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  {categories?.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                <CategorySelect onCategorySelect={setCategory} /> {/* Przekazujemy setCategory bezpośrednio */}
               </div>
             </div>
 
@@ -180,7 +170,7 @@ const ProductList = () => {
               onClick={handleSubmit}
               className="py-4 px-10 mt-5 rounded-lg text-lg font-bold bg-pink-600"
             >
-              UTWÓRZ
+              Utwórz
             </button>
           </div>
         </div>

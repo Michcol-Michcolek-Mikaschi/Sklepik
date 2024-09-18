@@ -9,40 +9,32 @@ import {
 } from "../../redux/api/productApiSlice";
 import { useFetchCategoriesQuery } from "../../redux/api/categoryApiSlice";
 import { toast } from "react-toastify";
+import CategorySelect from "../../components/CategorySelect";
+import { FaUpload } from "react-icons/fa";
 
 const AdminProductUpdate = () => {
   const params = useParams();
 
   const { data: productData } = useGetProductByIdQuery(params._id);
 
-  console.log(productData);
-
-  const [image, setImage] = useState(productData?.image || "");
+  const [images, setImages] = useState(productData?.images || []);
   const [name, setName] = useState(productData?.name || "");
   const [description, setDescription] = useState(
     productData?.description || ""
   );
   const [price, setPrice] = useState(productData?.price || "");
-  const [category, setCategory] = useState(productData?.category || "");
+  const [category, setCategory] = useState(productData?.category || []);
   const [quantity, setQuantity] = useState(productData?.quantity || "");
   const [brand, setBrand] = useState(productData?.brand || "");
   const [stock, setStock] = useState(productData?.countInStock);
+  const [uploading, setUploading] = useState(false);
 
-  // hook
   const navigate = useNavigate();
 
-  // Fetch categories using RTK Query
-  // Pobierz kategorie za pomocą zapytania RTK
   const { data: categories = [] } = useFetchCategoriesQuery();
 
   const [uploadProductImage] = useUploadProductImageMutation();
-
-  // Define the update product mutation
-  // Zdefiniuj mutację produktu aktualizacji
   const [updateProduct] = useUpdateProductMutation();
-
-  // Define the delete product mutation
-  // Zdefiniuj mutację usuwającą produkt
   const [deleteProduct] = useDeleteProductMutation();
 
   useEffect(() => {
@@ -53,25 +45,33 @@ const AdminProductUpdate = () => {
       setCategory(productData.category?._id);
       setQuantity(productData.quantity);
       setBrand(productData.brand);
-      setImage(productData.image);
+      setImages(productData.images || []);
     }
   }, [productData]);
 
   const uploadFileHandler = async (e) => {
+    const files = Array.from(e.target.files);
     const formData = new FormData();
-    formData.append("image", e.target.files[0]);
+    files.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    setUploading(true);
+
     try {
       const res = await uploadProductImage(formData).unwrap();
-      toast.success("Element dodany pomyślnie", {
+      toast.success("Zdjęcia dodane pomyślnie", {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
-      setImage(res.image);
+      setImages((prevImages) => [...prevImages, ...res.images]);
     } catch (err) {
-      toast.success("Element dodany pomyślnie", {
+      toast.error("Błąd podczas dodawania zdjęć", {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000,
       });
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -79,16 +79,17 @@ const AdminProductUpdate = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append("image", image);
+      images.forEach((image) => {
+        formData.append("images", image);
+      });
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
-      formData.append("category", category);
+      formData.append("category", category[category.length - 1]); // Wybieramy najniższą podkategorię
       formData.append("quantity", quantity);
       formData.append("brand", brand);
       formData.append("countInStock", stock);
 
-      // Update product using the RTK Query mutation
       const data = await updateProduct({ productId: params._id, formData });
 
       if (data?.error) {
@@ -134,138 +135,163 @@ const AdminProductUpdate = () => {
     }
   };
 
-  return (
-    <>
-      <div className="container  xl:mx-[9rem] sm:mx-[0]">
-        <div className="flex flex-col md:flex-row">
-          <AdminMenu />
-          <div className="md:w-3/4 p-3">
-            <div className="h-12">Zaktualizuj / Usuń Produkt</div>
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-            {image && (
-              <div className="text-center">
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  return (
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col md:flex-row">
+        <AdminMenu />
+        <div className="md:w-3/4 p-6 bg-gray-800 rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-white mb-6">Zaktualizuj / Usuń Produkt</h2>
+
+          {uploading && <div className="text-white">Przesyłanie...</div>}
+
+          {images.length > 0 && (
+            <div className="text-center mb-6">
+              <div className="relative">
                 <img
-                  src={image}
+                  src={images[currentImageIndex]}
                   alt="product"
-                  className="block mx-auto w-full h-[40%]"
+                  className="block mx-auto max-h-64 rounded-lg"
+                />
+                <button
+                  onClick={handlePrevImage}
+                  className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white px-2 py-1 rounded-full"
+                >
+                  &lt;
+                </button>
+                <button
+                  onClick={handleNextImage}
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white px-2 py-1 rounded-full"
+                >
+                  &gt;
+                </button>
+              </div>
+              <p className="text-white mt-2">
+                Zdjęcie {currentImageIndex + 1} z {images.length}
+              </p>
+            </div>
+          )}
+
+          <div className="mb-6">
+            <label className="block text-white font-bold mb-2">
+              {images.length > 0 ? "Zmień zdjęcia" : "Załaduj zdjęcia"}
+              <div className="flex items-center justify-center mt-2">
+                <label className="cursor-pointer flex flex-col items-center bg-gray-700 text-white rounded-lg py-2 px-4 hover:bg-gray-600">
+                  <FaUpload className="text-2xl" />
+                  <span className="mt-1">Wybierz zdjęcia</span>
+                  <input
+                    type="file"
+                    name="images"
+                    accept="image/*"
+                    multiple
+                    onChange={uploadFileHandler}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </label>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="name" className="block text-white font-bold mb-2">Nazwa</label>
+                <input
+                  type="text"
+                  id="name"
+                  className="w-full p-3 border rounded-lg bg-gray-700 text-white"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
-            )}
-
-            <div className="mb-3">
-              <label className="text-white  py-2 px-4 block w-full text-center rounded-lg cursor-pointer font-bold py-11">
-                {image ? image.name : "Upload image"}
+              <div>
+                <label htmlFor="price" className="block text-white font-bold mb-2">Cena</label>
                 <input
-                  type="file"
-                  name="image"
-                  accept="image/*"
-                  onChange={uploadFileHandler}
-                  className="text-white"
+                  type="number"
+                  id="price"
+                  className="w-full p-3 border rounded-lg bg-gray-700 text-white"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
                 />
-              </label>
+              </div>
+              <div>
+                <label htmlFor="quantity" className="block text-white font-bold mb-2">Ilość</label>
+                <input
+                  type="number"
+                  id="quantity"
+                  min="1"
+                  className="w-full p-3 border rounded-lg bg-gray-700 text-white"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="brand" className="block text-white font-bold mb-2">Marka</label>
+                <input
+                  type="text"
+                  id="brand"
+                  className="w-full p-3 border rounded-lg bg-gray-700 text-white"
+                  value={brand}
+                  onChange={(e) => setBrand(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="stock" className="block text-white font-bold mb-2">Liczba w magazynie</label>
+                <input
+                  type="number"
+                  id="stock"
+                  className="w-full p-3 border rounded-lg bg-gray-700 text-white"
+                  value={stock}
+                  onChange={(e) => setStock(e.target.value)}
+                />
+              </div>
+              <div>
+                <CategorySelect onCategorySelect={setCategory} />
+              </div>
             </div>
 
-            <div className="p-3">
-              <div className="flex flex-wrap">
-                <div className="one">
-                  <label htmlFor="name">Nazwa</label> <br />
-                  <input
-                    type="text"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white mr-[5rem]"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-
-                <div className="two">
-                  <label htmlFor="name block">Cena</label> <br />
-                  <input
-                    type="number"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white "
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-wrap">
-                <div>
-                  <label htmlFor="name block">Ilość</label> <br />
-                  <input
-                    type="number"
-                    min="1"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white mr-[5rem]"
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="name block">Marka</label> <br />
-                  <input
-                    type="text"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white "
-                    value={brand}
-                    onChange={(e) => setBrand(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <label htmlFor="" className="my-5">
-                Opis - Produktu
-              </label>
+            <div>
+              <label htmlFor="description" className="block text-white font-bold mb-2">Opis produktu</label>
               <textarea
-                type="text"
-                className="p-2 mb-3 bg-[#101011]  border rounded-lg w-[95%] text-white"
+                id="description"
+                className="w-full p-3 border rounded-lg bg-gray-700 text-white"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-
-              <div className="flex justify-between">
-                <div>
-                  <label htmlFor="name block">Liczba w magazynie</label> <br />
-                  <input
-                    type="text"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white "
-                    value={stock}
-                    onChange={(e) => setStock(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="">Kategoria</label> <br />
-                  <select
-                    placeholder="Wybierz kategorię"
-                    className="p-4 mb-3 w-[30rem] border rounded-lg bg-[#101011] text-white mr-[5rem]"
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    {categories?.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="">
-                <button
-                  onClick={handleSubmit}
-                  className="py-4 px-10 mt-5 rounded-lg text-lg font-bold  bg-green-600 mr-6"
-                >
-                  Aktualizuj
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="py-4 px-10 mt-5 rounded-lg text-lg font-bold  bg-pink-600"
-                >
-                  Usuń
-                </button>
-              </div>
             </div>
-          </div>
+
+            <div className="flex space-x-4">
+              <button
+                type="submit"
+                className="w-full py-3 px-6 rounded-lg text-lg font-bold bg-green-600 text-white"
+              >
+                Aktualizuj
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="w-full py-3 px-6 rounded-lg text-lg font-bold bg-red-600 text-white"
+              >
+                Usuń
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
