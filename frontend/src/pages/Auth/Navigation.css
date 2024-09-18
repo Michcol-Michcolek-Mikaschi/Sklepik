@@ -1,6 +1,6 @@
 /* Nawigacja */
 #navigation-container {
-  width: 4%;
+  width: 5%;
   transition: width 0.3s ease-in-out;
   overflow: hidden;
   position: fixed;
@@ -11,7 +11,6 @@
   z-index: 1000;
 }
 
-
 #navigation-container:hover {
   width: 15%;
 }
@@ -19,13 +18,14 @@
 /* Nazwy elementów nawigacyjnych */
 .nav-item-name {
   display: none;
+  opacity: 0;
+  color: #fff; /* Ustawiamy domyślnie biały kolor tekstu */
   transition: opacity 0.2s ease-in-out;
 }
 
 #navigation-container:hover .nav-item-name {
   display: block;
   opacity: 1;
-  color: #fff; /* Biały tekst dla kontrastu */
 }
 
 /* Pole wyszukiwania */
@@ -49,14 +49,11 @@
 
 /* Główna zawartość */
 .main-content {
-  margin-left: 6%; /* Zwiększamy margines, aby uniknąć nachodzenia menu */
-  transition: margin-left 0.3s ease-in-out;
-  padding: 20px;
+
 }
 
-/* Gdy menu nawigacyjne się rozszerzy */
-#navigation-container:hover + .main-content {
-  margin-left: 18%; /* Zwiększono margines dla szerokości rozszerzonego menu */
+#navigation-container:hover ~ .main-content {
+  margin-left: 15%; /* Po najechaniu na menu, margines zwiększa się do 15% */
 }
 
 /* Formularze i pola wyboru */
@@ -66,7 +63,7 @@ select {
   color: #fff; /* Biały tekst dla lepszej czytelności */
   border: 1px solid #333; /* Stylowe, ciemniejsze obramowanie */
   padding: 10px;
-  margin-bottom: 10px; /* Odstępy między elementami */
+  margin-bottom: 50px; /* Odstępy między elementami */
   width: 100%;
   border-radius: 8px;
 }
@@ -80,14 +77,28 @@ button {
   background-color: #00aaff; /* Nowoczesny, niebieski przycisk */
   color: #fff;
   border: none;
-  padding: 12px 24px;
+  padding: 8px 16px; /* Zmniejszone paddingi */
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-right: 10px;
 }
 
 button:hover {
   background-color: #008ecc;
+}
+
+/* Ikona użytkownika i menu profilu */
+button.user-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px; /* Mniejsze paddingi dla przycisku użytkownika */
+  margin-left: 0px; /* Marginesy wyrównane do lewej */
+}
+
+button svg {
+  margin-left: 0px; /* Mniejszy margines ikony svg */
 }
 
 /* Styl dla checkboxów i radiobuttonów */
@@ -129,6 +140,7 @@ input[type="radio"] {
   margin-top: 10px;
   width: 100%; /* Szeroki przycisk resetowania */
 }
+
 /* Poprawka koloru tekstu w liście kategorii */
 .category-list li {
   background-color: #e0e0e0; /* Zmieniono na lekko ciemniejsze tło */
@@ -137,13 +149,22 @@ input[type="radio"] {
   margin-bottom: 5px;
   border-radius: 5px;
 }
+
+/* Responsywność */
 @media (max-width: 768px) {
-  /* Główna zawartość dla mniejszych ekranów */
-  .main-content {
-    margin-left: 12%; /* Zwiększony margines dla mniejszych ekranów */
+  #navigation-container {
+    width: 15%; /* Na mniejszych ekranach menu ma stałą szerokość */
   }
 
-  #navigation-container:hover + .main-content {
-    margin-left: 20%; /* Zwiększony margines po rozszerzeniu menu */
+  #navigation-container:hover {
+    width: 15%; /* Szerokość menu nie zmienia się po najechaniu */
+  }
+
+  .main-content {
+    margin-left: 15%; /* Na mniejszych ekranach, margines stały */
+  }
+
+  #navigation-container:hover ~ .main-content {
+    margin-left: 15%; /* Margines pozostaje taki sam po najechaniu */
   }
 }

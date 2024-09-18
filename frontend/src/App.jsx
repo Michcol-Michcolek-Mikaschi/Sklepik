@@ -1,3 +1,4 @@
+// App.jsx
 import { Outlet } from "react-router-dom";
 import Navigation from "./pages/Auth/Navigation";
 import { ToastContainer } from "react-toastify";
@@ -8,9 +9,12 @@ const App = () => {
     <>
       <ToastContainer />
       <Navigation />
-      <main className="py-3">
-        <Outlet />
-      </main>
+      <div className="main-content">
+        {/* Dodajemy klasę "main-content" */}
+        <main className="py-3">
+          <Outlet />
+        </main>
+      </div>
     </>
   );
 };

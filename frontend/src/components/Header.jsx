@@ -3,7 +3,6 @@ import { useGetTopProductsQuery } from "../redux/api/productApiSlice";
 import Loader from "./Loader";
 import SmallProduct from "../pages/Products/SmallProduct";
 import ProductCarousel from "../pages/Products/ProductCarousel";
-// Usunięto import TopOffers
 
 const Header = () => {
   const { data, isLoading, error } = useGetTopProductsQuery();
@@ -18,19 +17,17 @@ const Header = () => {
 
   return (
     <>
-      {/* Usunięto komponent TopOffers */}
-
-      <div className="flex justify-around">
-        <div className="xl:block lg:hidden md:hidden:sm:hidden">
-          <div className="grid grid-cols-2">
+      <div className="flex flex-col items-center">
+        <ProductCarousel />
+        <div className="xl:block lg:hidden md:hidden sm:hidden w-full mt-1">
+          <div className="grid grid-cols-4 gap-0.125 justify-items-center">
             {data.map((product) => (
-              <div key={product._id}>
+              <div key={product._id} className="flex justify-center">
                 <SmallProduct product={product} />
               </div>
             ))}
           </div>
         </div>
-        <ProductCarousel />
       </div>
     </>
   );

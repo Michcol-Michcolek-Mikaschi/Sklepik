@@ -5,6 +5,7 @@ import {
   AiOutlineLogin,
   AiOutlineUserAdd,
   AiOutlineShoppingCart,
+  AiOutlineUser,
 } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -20,7 +21,6 @@ const Navigation = () => {
   const { cartItems } = useSelector((state) => state.cart);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -43,11 +43,11 @@ const Navigation = () => {
 
   return (
     <div
+      id="navigation-container"
       style={{ zIndex: 9999 }}
       className={`${
-        showSidebar ? "hidden" : "flex"
-      } xl:flex lg:flex md:hidden sm:hidden flex-col justify-between p-4 text-white bg-[#000] w-[4%] hover:w-[15%] h-[100vh]  fixed `}
-      id="navigation-container"
+        dropdownOpen ? "hidden" : "flex"
+      } xl:flex lg:flex md:hidden sm:hidden flex-col justify-between p-4 text-white bg-[#000] fixed h-full`}
     >
       <div className="flex flex-col justify-center space-y-4">
         <Link
@@ -55,7 +55,7 @@ const Navigation = () => {
           className="flex items-center transition-transform transform hover:translate-x-2"
         >
           <AiOutlineHome className="mr-2 mt-[3rem]" size={26} />
-          <span className="hidden nav-item-name mt-[3rem]">GłÓWNA</span>{" "}
+          <span className="hidden nav-item-name mt-[3rem]">GŁÓWNA</span>{" "}
         </Link>
 
         <Link
@@ -97,10 +97,13 @@ const Navigation = () => {
       <div className="relative">
         <button
           onClick={toggleDropdown}
-          className="flex items-center text-gray-800 focus:outline-none"
+          className="flex items-center text-gray-800 focus:outline-none p-2" // Zmieniono padding
         >
           {userInfo ? (
-            <span className="text-white">{userInfo.username}</span>
+            <>
+              <AiOutlineUser className="text-white" size={10} /> {/* Zmniejszono rozmiar */}
+              <span className="hidden nav-item-name ml-1">{userInfo.username}</span>
+            </>
           ) : (
             <></>
           )}
@@ -177,7 +180,7 @@ const Navigation = () => {
 
             <li>
               <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
-              Profil
+                Profil
               </Link>
             </li>
             <li>
